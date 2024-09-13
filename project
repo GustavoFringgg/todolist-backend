@@ -1,0 +1,17 @@
+[ ] 設置環境
+
+
+
+使用者 api
+[ V ] /users/sign_up --POST
+[ V ] /users/sign_in --POST 
+[ ] /users/checkout --GET
+[ ] /users/sign_out --POST
+
+代辦事項api
+[ V ] /todos/ --GET
+[ V ] /todos/ --POST
+[ V ] /todos/{id} --PUT
+[ V ] /todos/{id} --DELETE
+[ ] /todos/{id}/toggle --PATCH
+
