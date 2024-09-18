@@ -2,12 +2,13 @@
 
 
 
-使用者 api
+開發api
 [ V ] /users/sign_up --POST
 [ V ] /users/sign_in --POST 
-[ ] /users/checkout --GET
-[ ] /users/sign_out --POST
+[ V ] /users/checkout --GET
+[ V ] /users/sign_out --POST
 
+銜接
 代辦事項api
 [ V ] /todos/ --GET
 [ V ] /todos/ --POST

@@ -10,6 +10,7 @@ const sign_up = async (req, res, next) => {
   if (!validator.isLength(nickname, { min: 2 })) {
     return next(appError("400", "暱稱不能少於兩個字元", next));
   }
+  console.log(req.body);
   if (!email || !password || !confirmPassword || !nickname) {
     return next(appError("400", "欄位未填寫正確！", next));
   }
@@ -50,18 +51,12 @@ const sign_in = async (req, res, next) => {
     return next(appError(400, "帳號密碼不可為空", next));
   }
   const user = await User.findOne({ email }).select("+password");
-  console.log(user);
-  ///output objected or Null
-  //findOne{{email}}為解構值，find key為email的value
-  //select(" + ")這次回傳password
 
   if (!user) {
     return next(appError(400, "帳號輸入錯誤", next));
   }
 
   const auth = await bcrypt.compare(password, user.password);
-  //output Boolean
-  //compare(req.password vs bcrypt.hash password)
 
   if (!auth) {
     return next(appError(400, "密碼輸入錯誤", next));
@@ -70,4 +65,12 @@ const sign_in = async (req, res, next) => {
   generateSendJWT(user, 200, res);
 };
 
-module.exports = { sign_in, sign_up };
+const tokencheck = (req, res, next) => {
+  console.log("tokencheck:", req.user);
+  res.json({ message: "Token 驗證成功", user: req.user });
+};
+
+const sign_out = (req, res, next) => {
+  res.json({ message: "登出成功", user: req.user });
+};
+module.exports = { sign_in, sign_up, tokencheck, sign_out };
