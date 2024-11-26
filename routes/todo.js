@@ -5,5 +5,5 @@ const { isAuth } = require("../utils/TokenCheck");
 router.post("/", [isAuth, todoControllers.addTodo]);
 router.get("/", [isAuth, todoControllers.getTodo]);
 router.delete("/:id", [isAuth, todoControllers.deleteTodo]);
-router.put("/:id", todoControllers.updateTodo);
+router.patch("/:id/toggle", [isAuth, todoControllers.updateTodo]);
 module.exports = router;

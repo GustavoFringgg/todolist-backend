@@ -35,9 +35,20 @@ const deleteTodo = async (req, res, next) => {
 
 const updateTodo = async (req, res, next) => {
   const { id } = req.params;
-  const { newTodo } = req.body;
-  const update = await Post.updateOne({ _id: id }, { todos: newTodo });
-  handleSuccess(res, "更新貼文成功", update);
+  try {
+    const todo = await Post.findById(id);
+    if (!todo) {
+      return res.status(404).json({ message: "待辦事項不存在" });
+    }
+
+    todo.status = !todo.status;
+    await todo.save();
+
+    return res.status(200).json({ message: "更新成功", todo });
+  } catch (error) {
+    // 錯誤處理
+    return res.status(500).json({ message: "更新失敗", error });
+  }
 };
 
 module.exports = {
