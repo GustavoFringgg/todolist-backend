@@ -2,17 +2,28 @@
 
 
 
-開發api
+api
 [ V ] /users/sign_up --POST
 [ V ] /users/sign_in --POST 
 [ V ] /users/checkout --GET
 [ V ] /users/sign_out --POST
 
-銜接
-代辦事項api
+前端api
+[ V ] /users/sign_up --POST
+[ V ] /users/sign_in --POST 
+[ V ] /users/checkout --GET
+[ V ] /users/sign_out --POST
+
+後端api
 [ V ] /todos/ --GET
 [ V ] /todos/ --POST
 [ V ] /todos/{id} --PUT
 [ V ] /todos/{id} --DELETE
 [ ] /todos/{id}/toggle --PATCH
 
+前端api
+[ ] /todos/ --GET  =>針對user顯示
+[ ] /todos/ --POST
+[ ] /todos/{id} --PUT
+[ ] /todos/{id} --DELETE
+[ ] /todos/{id}/toggle --PATCH

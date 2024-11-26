@@ -10,7 +10,6 @@ const sign_up = async (req, res, next) => {
   if (!validator.isLength(nickname, { min: 2 })) {
     return next(appError("400", "暱稱不能少於兩個字元", next));
   }
-  console.log(req.body);
   if (!email || !password || !confirmPassword || !nickname) {
     return next(appError("400", "欄位未填寫正確！", next));
   }
@@ -66,7 +65,6 @@ const sign_in = async (req, res, next) => {
 };
 
 const tokencheck = (req, res, next) => {
-  console.log("tokencheck:", req.user);
   res.json({ message: "Token 驗證成功", user: req.user });
 };
 
