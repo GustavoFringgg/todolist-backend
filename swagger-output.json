@@ -167,7 +167,67 @@
             "type": "string"
           }
         ],
-        "responses": {}
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "success"
+                },
+                "user": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string",
+                      "example": "token"
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "王小明"
+                    }
+                  }
+                },
+                "Issued_At": {
+                  "type": "string",
+                  "example": "2024/12/2 下午11:46:41"
+                },
+                "Expires_At": {
+                  "type": "string",
+                  "example": "2024/12/4 下午11:46:41"
+                },
+                "Expires_Day": {
+                  "type": "number",
+                  "example": 2
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "OK"
+          },
+          "401": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "你尚未登入"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Unauthorized"
+          }
+        }
       }
     },
     "/users/checkout": {

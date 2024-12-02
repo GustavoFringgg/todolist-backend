@@ -37,8 +37,27 @@ router.post(
                 $password: 'Aa123456',
         }
     }
+    #swagger.responses[200] = {
+    schema: { 
+    "status": "success",
+    "user": {
+        "token": "token",
+        "name": "王小明"
+        },
+    "Issued_At": "2024/12/2 下午11:46:41",
+    "Expires_At": "2024/12/4 下午11:46:41",
+    "Expires_Day": 2
+        }
+    }
+        #swagger.responses[401] = {
+    schema: { 
+      status:false,
+      message:'你尚未登入'
+      }
+    }
 */
 );
+
 router.get(
   "/checkout",
   [isAuth, userControllers.tokencheck]
