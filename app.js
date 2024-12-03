@@ -17,9 +17,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
+app.use("/users", usersRouter);
 app.use("/todos", todosRouter);
 // app.use("/auth", usersRouter);
-app.use("/users", usersRouter);
 app.use("/api-doc", swaggerUI.serve, swaggerUI.setup(swaggerFile));
 app.use((req, res, next) => {
   res.status(404).send({

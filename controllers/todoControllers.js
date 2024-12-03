@@ -38,16 +38,15 @@ const updateTodo = async (req, res, next) => {
   try {
     const todo = await Post.findById(id);
     if (!todo) {
-      return res.status(404).json({ message: "待辦事項不存在" });
+      return next(appError(404, "待辦事項不存在"));
     }
 
     todo.status = !todo.status;
     await todo.save();
-
-    return res.status(200).json({ message: "更新成功", todo });
+    handleSuccess(res, "更新成功", todo);
   } catch (error) {
     // 錯誤處理
-    return res.status(500).json({ message: "更新失敗", error });
+    return next(appError(500, "更新失敗"));
   }
 };
 

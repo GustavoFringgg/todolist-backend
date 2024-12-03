@@ -8,27 +8,27 @@ const handleErrorAsync = require("../utils/handleErrorAsync");
 const sign_up = async (req, res, next) => {
   let { email, password, confirmPassword, nickname } = req.body;
   if (!validator.isLength(nickname, { min: 2 })) {
-    return next(appError("400", "暱稱不能少於兩個字元", next));
+    return next(appError(422, "暱稱不能少於兩個字元", next));
   }
   if (!email || !password || !confirmPassword || !nickname) {
-    return next(appError("400", "欄位未填寫正確！", next));
+    return next(appError(402, "欄位未填寫正確！", next));
   }
   if (!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/.test(password)) {
     return next(
-      appError(400, "密碼需包含至少一個字母和一個數字,並且至少6個字符長")
+      appError(422, "密碼需包含至少一個字母和一個數字,並且至少6個字符長")
     );
   }
   if (password !== confirmPassword) {
-    return next(appError("400", "密碼不一致！", next));
+    return next(appError(422, "密碼不一致！", next));
   }
 
   if (!validator.isEmail(email)) {
-    return next(appError("400", "Email 格式不正確", next));
+    return next(appError(422, "Email 格式不正確", next));
   }
   const user_email = await User.findOne({ email }); //true=>data false=>null
 
   if (user_email) {
-    return next(appError(400, "信箱已註冊過~"));
+    return next(appError(409, "信箱已註冊過~"));
   }
 
   //加密密碼;
@@ -47,18 +47,18 @@ const sign_in = async (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return next(appError(400, "帳號密碼不可為空", next));
+    return next(appError(402, "帳號密碼不可為空", next));
   }
   const user = await User.findOne({ email }).select("+password");
 
   if (!user) {
-    return next(appError(400, "帳號輸入錯誤", next));
+    return next(appError(401, "帳號或密碼輸入錯誤", next));
   }
 
   const auth = await bcrypt.compare(password, user.password);
 
   if (!auth) {
-    return next(appError(400, "密碼輸入錯誤", next));
+    return next(appError(401, "帳號或密碼輸入錯誤", next));
   }
 
   generateSendJWT(user, 200, res);

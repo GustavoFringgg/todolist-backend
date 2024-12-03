@@ -10,16 +10,64 @@ router.post(
     #swagger.description = '新增會員資料' 
     #swagger.parameters['body'] = {
     in: 'body',
-    description: '註冊資訊',
+    description: '註冊所需欄位',
     required: true,
     schema: {
-                $nickname: '王小明',
-                $email: '987654321@gmail.com',
-                $password: 'Aa123456',
-                $confirmPassword:'Aa123456'
-        }
+    $nickname: '王小明',
+    $email: '987654321@gmail.com',
+    $password: 'Aa123456',
+    $confirmPassword:'Aa123456'
     }
-
+    }
+    #swagger.responses[201] = {
+    schema: { 
+    "status": "success",
+    "user": {
+    "token": "token",
+    "name": "王小明"
+    },
+    "Issued_At": "2024/12/2 下午11:46:41",
+    "Expires_At": "2024/12/4 下午11:46:41",
+    "Expires_Day": 2
+    }
+    }
+    #swagger.responses[422] = {
+    schema: { 
+    "message":{
+        type: "array",
+        items: {
+          type: "string",
+          examples: [
+            "暱稱不能少於兩個字元",
+            "密碼需包含至少一個字母和一個數字,並且至少6個字符長",
+            "密碼不一致！",
+            "Email 格式不正確"
+          ]
+        }},
+    "error": {
+    "statusCode": 422,
+    "isOperational": true   
+    }
+    }
+    }
+    #swagger.responses[402] = {
+    schema: { 
+    "message": "欄位未填寫正確！",
+    "error": {
+    "statusCode":402,
+    "isOperational": true
+    }
+    }
+    }
+    #swagger.responses[409] = {
+    schema: { 
+    "message": "信箱已註冊過~",
+    "error": {
+    "statusCode": 409,
+    "isOperational": true
+    }
+    }
+    }
  */
 );
 router.post(
@@ -27,33 +75,45 @@ router.post(
   userControllers.sign_in
   /*  #swagger.tags = ['Users -使用者']
     #swagger.summary = '登入會員'
-    #swagger.description = '登入會員資料' 
+    #swagger.description = '登入資訊'
     #swagger.parameters['body'] = {
     in: 'body',
-    description: '登入資訊',
+    description: '登入所需欄位',
     required: true,
     schema: {
-                $email: '987654321@gmail.com',
-                $password: 'Aa123456',
-        }
+    $email: '987654321@gmail.com',
+    $password: 'Aa123456',
+    }
     }
     #swagger.responses[200] = {
     schema: { 
     "status": "success",
     "user": {
-        "token": "token",
-        "name": "王小明"
-        },
+    "token": "token",
+    "name": "王小明"
+    },
     "Issued_At": "2024/12/2 下午11:46:41",
     "Expires_At": "2024/12/4 下午11:46:41",
     "Expires_Day": 2
-        }
     }
-        #swagger.responses[401] = {
+    }
+    #swagger.responses[401] = {
     schema: { 
-      status:false,
-      message:'你尚未登入'
-      }
+    "message": "帳號或密碼輸入錯誤",
+    "error": {
+    "statusCode": 401,
+    "isOperational": true
+    }
+    }
+    }
+        #swagger.responses[402] = {
+    schema: { 
+    "message": "帳號密碼不可為空",
+    "error": {
+    "statusCode": 402,
+    "isOperational": true
+    }
+    }
     }
 */
 );
