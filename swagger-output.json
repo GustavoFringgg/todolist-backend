@@ -16,7 +16,7 @@
       "type": "apiKey",
       "in": "headers",
       "name": "authorization",
-      "description": "請加上api key"
+      "description": "請在取得的 token 前補上 'Bearer' 再送出(須包含一空白字元)，範例：'Bearer {your token}'"
     }
   },
   "paths": {
@@ -344,6 +344,34 @@
               }
             },
             "description": "Payment Required"
+          },
+          "404": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "用戶不存在"
+                },
+                "error": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "number",
+                      "example": 404
+                    },
+                    "isOperational": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Not Found"
           }
         }
       }
@@ -355,18 +383,101 @@
         ],
         "summary": "檢查 Token",
         "description": "檢查 Token 是否有效",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          }
-        ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Token 驗證成功"
+                },
+                "user": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string",
+                      "example": "token"
+                    },
+                    "nickname": {
+                      "type": "string",
+                      "example": "王小明"
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "987654321@gmail.com"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "example": "2024-12-03T01:43:33.088Z"
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "array"
+                    },
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "string"
+                        },
+                        "examples": {
+                          "type": "array",
+                          "example": [
+                            "你尚未登入！",
+                            "token效期過期請重新登入"
+                          ],
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "error": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "number",
+                      "example": 401
+                    },
+                    "isOperational": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Bad Request"
           }
-        }
+        },
+        "security": [
+          {
+            "apikeyAuth": []
+          }
+        ]
       }
     },
     "/users/sign_out": {
@@ -378,7 +489,19 @@
         "description": "刪除代辦事項",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "登出成功"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           }
         }
       }
@@ -391,11 +514,6 @@
         "summary": "新增Todo",
         "description": "新增代辦事項",
         "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
           {
             "name": "body",
             "in": "body",
@@ -410,10 +528,84 @@
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "message": {
+                  "type": "string",
+                  "example": "新增貼文成功"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "type": "string",
+                      "example": "674e6245a0e16ca1dfebe0ce"
+                    },
+                    "todos": {
+                      "type": "string",
+                      "example": "any"
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "_id": {
+                      "type": "string",
+                      "example": "67515776731145660b5c18de"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "example": "2024-12-05T07:34:14.076Z"
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "你沒有填寫 todo 資料"
+                },
+                "error": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "number",
+                      "example": 400
+                    },
+                    "isOperational": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Bad Request"
           }
-        }
+        },
+        "security": [
+          {
+            "apikeyAuth": []
+          }
+        ]
       },
       "get": {
         "tags": [
@@ -421,18 +613,60 @@
         ],
         "summary": "取得Todo",
         "description": "取得代辦事項",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          }
-        ],
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "message": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "6751586bae28a79ad3daf769"
+                      },
+                      "user": {
+                        "type": "string",
+                        "example": "674e6245a0e16ca1dfebe0ce"
+                      },
+                      "todos": {
+                        "type": "string",
+                        "example": "any"
+                      },
+                      "status": {
+                        "type": "boolean",
+                        "example": false
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "example": "2024-12-05T07:38:19.235Z"
+                      }
+                    }
+                  }
+                },
+                "data": {
+                  "type": "string",
+                  "example": "目前共有1則貼文"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "OK"
           }
-        }
+        },
+        "security": [
+          {
+            "apikeyAuth": []
+          }
+        ]
       }
     },
     "/todos/{id}": {
@@ -448,18 +682,62 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "message": {
+                  "type": "string",
+                  "example": "貼文刪除成功"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "無效的貼文 ID"
+                },
+                "error": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "number",
+                      "example": 400
+                    },
+                    "isOperational": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Bad Request"
           }
-        }
+        },
+        "security": [
+          {
+            "apikeyAuth": []
+          }
+        ]
       }
     },
     "/todos/{id}/toggle": {
@@ -475,18 +753,115 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "message": {
+                  "type": "string",
+                  "example": "更新成功"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string",
+                      "example": "6751586bae28a79ad3daf769"
+                    },
+                    "user": {
+                      "type": "string",
+                      "example": "674e6245a0e16ca1dfebe0ce"
+                    },
+                    "todos": {
+                      "type": "string",
+                      "example": "any"
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "example": "2024-12-05T07:38:19.235Z"
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "OK"
+          },
+          "404": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "待辦事項不存在"
+                },
+                "error": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "number",
+                      "example": 404
+                    },
+                    "isOperational": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Not Found"
+          },
+          "500": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "更新失敗"
+                },
+                "error": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "number",
+                      "example": 500
+                    },
+                    "isOperational": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Internal Server Error"
           }
-        }
+        },
+        "security": [
+          {
+            "apikeyAuth": []
+          }
+        ]
       }
     }
   }

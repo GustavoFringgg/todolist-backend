@@ -4,12 +4,9 @@ const jwt = require("jsonwebtoken");
 const User = require("../model/usermodel");
 const isAuth = handleErrorAsync(async (req, res, next) => {
   // 確認 token 是否存在
-  let token = req.headers.authorization;
-  //   if (req.headers.authorization) {
-  //     token = req.headers.authorization.split(" ")[1];
-  //     console.log("here");
-  //   }
-
+  if (req.headers.authorization) {
+    token = req.headers.authorization.split(" ")[1];
+  }
   if (!token) {
     return next(appError(401, "你尚未登入！", next));
   }
@@ -17,7 +14,7 @@ const isAuth = handleErrorAsync(async (req, res, next) => {
   const decoded = await new Promise((resolve, reject) => {
     jwt.verify(token, process.env.JWT_SECRET, (err, payload) => {
       if (err) {
-        return next(appError(400, "token效期過期請重新登入"));
+        return next(appError(400, "token效期過期請重新登入"), next);
       } else {
         resolve(payload);
       }
@@ -39,7 +36,7 @@ const isAuth = handleErrorAsync(async (req, res, next) => {
   }
 
   req.user = currentUser;
-
+  console.log("user", req.user);
   next();
 });
 

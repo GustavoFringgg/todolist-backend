@@ -106,11 +106,20 @@ router.post(
     }
     }
     }
-        #swagger.responses[402] = {
+    #swagger.responses[402] = {
     schema: { 
     "message": "帳號密碼不可為空",
     "error": {
     "statusCode": 402,
+    "isOperational": true
+    }
+    }
+    }
+    #swagger.responses[404] = {
+    schema: { 
+    "message": "用戶不存在",
+    "error": {
+    "statusCode": 404,
     "isOperational": true
     }
     }
@@ -124,7 +133,38 @@ router.get(
   /*  #swagger.tags = ['Users -使用者']
     #swagger.summary = '檢查 Token'
     #swagger.description = '檢查 Token 是否有效' 
-    */
+    #swagger.security = [{ "apikeyAuth": [] }]
+    #swagger.responses[200] = {
+    schema: { 
+    "message": "Token 驗證成功",
+    "user": {
+    "_id": "token",
+    "nickname": "王小明",
+    "email": "987654321@gmail.com",
+    "createdAt": "2024-12-03T01:43:33.088Z"
+    }
+    }
+    }
+    #swagger.responses[400] = {
+    schema: { 
+    "message":{
+    type: "array",
+    items: {
+    type: "string",
+    examples: [
+    "你尚未登入！",
+    "token效期過期請重新登入",
+    ]
+    }}   
+    ,
+    "error": {
+    "statusCode": 401,
+    "isOperational": true
+    }
+    }
+    }
+    }
+*/
 );
 router.post(
   "/sign_out",
@@ -132,6 +172,12 @@ router.post(
   /*  #swagger.tags = ['Users -使用者']
     #swagger.summary = '登出會員'
     #swagger.description = '刪除代辦事項' 
+
+        #swagger.responses[200] = {
+    schema: { 
+    "message": "登出成功"
+    }
+    }
     */
 );
 

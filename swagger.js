@@ -1,4 +1,8 @@
-const swaggerAutogen = require("swagger-autogen")();
+const swaggerOptions = {
+  autoHeaders: false, // 禁止自動添加 headers
+};
+const swaggerAutogen = require("swagger-autogen")(swaggerOptions);
+
 const doc = {
   //會有info物件
   info: {
@@ -6,6 +10,7 @@ const doc = {
     description: "後端API文件", //描述這個文件在幹嘛
   },
   host: "localhost:3000", //如果上render記得改網址
+  basePath: "/",
   schemes: ["http", "https"], //swagger支援什麼模式
 
   securityDefinitions: {
@@ -13,7 +18,8 @@ const doc = {
       type: "apiKey",
       in: "headers",
       name: "authorization",
-      description: "請加上api key",
+      description:
+        "請在取得的 token 前補上 'Bearer' 再送出(須包含一空白字元)，範例：'Bearer {your token}'",
     },
   },
 };

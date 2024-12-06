@@ -52,7 +52,7 @@ const sign_in = async (req, res, next) => {
   const user = await User.findOne({ email }).select("+password");
 
   if (!user) {
-    return next(appError(401, "帳號或密碼輸入錯誤", next));
+    return next(appError(404, "用戶不存在", next));
   }
 
   const auth = await bcrypt.compare(password, user.password);
@@ -65,10 +65,11 @@ const sign_in = async (req, res, next) => {
 };
 
 const tokencheck = (req, res, next) => {
-  res.json({ message: "Token 驗證成功", user: req.user });
+  res.status(200).json({ message: "Token 驗證成功", user: req.user });
 };
 
 const sign_out = (req, res, next) => {
-  res.json({ message: "登出成功", user: req.user });
+  res.clearCookie("userToken", { path: "/" });
+  res.status(200).json({ message: "登出成功", user: req.user });
 };
 module.exports = { sign_in, sign_up, tokencheck, sign_out };
