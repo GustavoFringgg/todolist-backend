@@ -1,10 +1,11 @@
 var express = require("express");
 var router = express.Router();
+const handleErrorAsync = require("../utils/handleErrorAsync");
 const userControllers = require("../controllers/userControllers");
 const { isAuth } = require("../utils/TokenCheck");
 router.post(
   "/sign_up",
-  userControllers.sign_up
+  handleErrorAsync(userControllers.sign_up)
   /*  #swagger.tags = ['Users -使用者']
     #swagger.summary = '註冊會員'
     #swagger.description = '新增會員資料' 
@@ -72,7 +73,7 @@ router.post(
 );
 router.post(
   "/sign_in",
-  userControllers.sign_in
+  handleErrorAsync(userControllers.sign_in)
   /*  #swagger.tags = ['Users -使用者']
     #swagger.summary = '登入會員'
     #swagger.description = '登入資訊'

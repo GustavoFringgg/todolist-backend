@@ -10,7 +10,7 @@ const todosRouter = require("./routes/todo");
 const usersRouter = require("./routes/users");
 const app = express();
 app.use(cors());
-require("./connections"); //DB引入
+require("./connections/sequelize"); //DB引入
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -29,6 +29,9 @@ app.use((req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
+  if (err.name == "SequelizeUniqueConstraintError") {
+    err.message = "已重複註冊";
+  }
   res.status(400).json({
     message: err.message,
     error: err,

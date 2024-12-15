@@ -1,7 +1,8 @@
-const User = require("../model/usermodel");
+// const User = require("../model/usermodel");
 const bcrypt = require("bcryptjs");
 const validator = require("validator");
-const mongoose = require("mongoose");
+const User = require("../model/new_usermodel");
+// const mongoose = require("mongoose");
 const appError = require("../utils/appError");
 const { generateSendJWT } = require("../utils/JwtToken");
 const handleErrorAsync = require("../utils/handleErrorAsync");
@@ -25,11 +26,6 @@ const sign_up = async (req, res, next) => {
   if (!validator.isEmail(email)) {
     return next(appError(422, "Email 格式不正確", next));
   }
-  const user_email = await User.findOne({ email }); //true=>data false=>null
-
-  if (user_email) {
-    return next(appError(409, "信箱已註冊過~"));
-  }
 
   //加密密碼;
   password = await bcrypt.hash(password, 12);
@@ -40,7 +36,7 @@ const sign_up = async (req, res, next) => {
   });
   //   handleSuccess(res, "新增會員成功");
 
-  generateSendJWT(newUser, 201, res);
+  generateSendJWT(newUser.dataValues, 201, res);
 }; //newUser會夾帶monogodb的_id物件
 
 const sign_in = async (req, res, next) => {
@@ -49,13 +45,18 @@ const sign_in = async (req, res, next) => {
   if (!email || !password) {
     return next(appError(402, "帳號密碼不可為空", next));
   }
-  const user = await User.findOne({ email }).select("+password");
+
+  // const user = await User.findOne({ email }).select("+password");
+  const user = await User.findOne({
+    where: { email },
+    attributes: { include: ["password"] },
+  });
 
   if (!user) {
     return next(appError(404, "用戶不存在", next));
   }
 
-  const auth = await bcrypt.compare(password, user.password);
+  const auth = await bcrypt.compare(password, user.dataValues.password);
 
   if (!auth) {
     return next(appError(401, "帳號或密碼輸入錯誤", next));
@@ -64,11 +65,11 @@ const sign_in = async (req, res, next) => {
   generateSendJWT(user, 200, res);
 };
 
-const tokencheck = (req, res, next) => {
+const tokencheck = async (req, res, next) => {
   res.status(200).json({ message: "Token 驗證成功", user: req.user });
 };
 
-const sign_out = (req, res, next) => {
+const sign_out = async (req, res, next) => {
   res.clearCookie("userToken", { path: "/" });
   res.status(200).json({ message: "登出成功", user: req.user });
 };

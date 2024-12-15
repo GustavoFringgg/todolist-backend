@@ -1,11 +1,10 @@
 const jwt = require("jsonwebtoken");
 const appError = require("./appError");
 const handleErrorAsync = require("./handleErrorAsync");
-const User = require("../model/usermodel");
 
 // 產生 JWT token
 const generateSendJWT = (user, statusCode, res) => {
-  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+  const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_DAY,
   });
 

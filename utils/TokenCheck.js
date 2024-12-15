@@ -1,7 +1,7 @@
 const appError = require("./appError");
 const handleErrorAsync = require("./handleErrorAsync");
 const jwt = require("jsonwebtoken");
-const User = require("../model/usermodel");
+const User = require("../model/new_usermodel");
 const isAuth = handleErrorAsync(async (req, res, next) => {
   // 確認 token 是否存在
   if (req.headers.authorization) {
@@ -25,18 +25,20 @@ const isAuth = handleErrorAsync(async (req, res, next) => {
     return next(appError(401, "Token 無效"));
   }
 
-  const currentUser = await User.findById(decoded.id).select(
-    "+email +createdAt"
-  );
+  // const currentUser = await User.findById(decoded.id).select(
+  //   "+email +createdAt"
+  // );
+  const currentUser = await User.findOne({
+    where: { id: decoded.id },
+    attributes: { include: ["password"] },
+  });
 
   //currentUser =>整包會員資料
-
   if (!currentUser) {
     return next(appError(401, "用戶不存在"));
   }
 
   req.user = currentUser;
-  console.log("user", req.user);
   next();
 });
 
