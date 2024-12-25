@@ -3,7 +3,7 @@ const dotenv = require("dotenv");
 dotenv.config({ path: "./config.env" });
 // 替換為你的 Render 提供的資料庫連線 URL
 const sequelize = new Sequelize(
-  "postgresql://admin:FYoDHEDx8KbX4pMxfESgxUyzu4RzMWp5@dpg-ctckrq2j1k6c73fi0rug-a.oregon-postgres.render.com/demo_1r4s", //External Database URL
+  process.env.PostgreSql, //External Database URL
   {
     dialect: "postgres",
     dialectOptions: {
