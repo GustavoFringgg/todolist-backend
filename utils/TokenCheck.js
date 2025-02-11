@@ -9,9 +9,6 @@ const isAuth = handleErrorAsync(async (req, res, next) => {
     return next(appError(401, "你尚未登入！", next));
   }
 
-  // if (!token) {
-  //   return next(appError(401, "你尚未登入！", next));
-  // }
   // 驗證 token 正確性
   const decoded = await new Promise((resolve, reject) => {
     jwt.verify(token, process.env.JWT_SECRET, (err, payload) => {
@@ -22,7 +19,6 @@ const isAuth = handleErrorAsync(async (req, res, next) => {
       }
     });
   });
-  //decoded : payload{ mongodb_id,iat(製造日期),exp(過期日期) }
   if (!decoded || !decoded.id) {
     return next(appError(401, "Token 無效"));
   }
@@ -33,7 +29,6 @@ const isAuth = handleErrorAsync(async (req, res, next) => {
     .select("id, email, nickname") // 取得需要的欄位
     .eq("id", decoded.id)
     .single(); // 只取一筆
-  console.log("user", user);
   if (error || !user) {
     return next(appError(401, "用戶不存在"));
   }
@@ -43,8 +38,6 @@ const isAuth = handleErrorAsync(async (req, res, next) => {
   }
 
   req.user = user;
-  console.log("req", req.user);
-
   next();
 });
 

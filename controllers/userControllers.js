@@ -2,8 +2,8 @@ const bcrypt = require("bcryptjs");
 const validator = require("validator");
 const appError = require("../utils/appError");
 const { generateSendJWT } = require("../utils/JwtToken");
-const handleErrorAsync = require("../utils/handleErrorAsync");
 const supabase = require("../connections/supabaseClient");
+
 const sign_up = async (req, res, next) => {
   let { email, password, confirmPassword, nickname } = req.body;
   if (!validator.isLength(nickname, { min: 2 })) {
@@ -38,7 +38,7 @@ const sign_up = async (req, res, next) => {
     ])
     .select("*"); // 返回所有欄位的資料
 
-  if ((error.code = 23505)) {
+  if (error && error.code == 23505) {
     console.error("Error creating user:", error);
     return next(appError(422, "已經註冊過囉", next));
   }
@@ -61,7 +61,6 @@ const sign_in = async (req, res, next) => {
   if (error || !user) {
     return next(appError(404, "用戶不存在"));
   }
-  console.log("登入data", user);
   // 驗證密碼
   const auth = await bcrypt.compare(password, user.password);
   if (!auth) {
