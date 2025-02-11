@@ -1,11 +1,9 @@
-// const User = require("../model/usermodel");
 const bcrypt = require("bcryptjs");
 const validator = require("validator");
-const User = require("../model/new_usermodel");
-// const mongoose = require("mongoose");
 const appError = require("../utils/appError");
 const { generateSendJWT } = require("../utils/JwtToken");
 const handleErrorAsync = require("../utils/handleErrorAsync");
+const supabase = require("../connections/supabaseClient");
 const sign_up = async (req, res, next) => {
   let { email, password, confirmPassword, nickname } = req.body;
   if (!validator.isLength(nickname, { min: 2 })) {
@@ -29,15 +27,23 @@ const sign_up = async (req, res, next) => {
 
   //加密密碼;
   password = await bcrypt.hash(password, 12);
-  const newUser = await User.create({
-    email,
-    password,
-    nickname,
-  });
-  //   handleSuccess(res, "新增會員成功");
+  const { data, error } = await supabase
+    .from("users")
+    .insert([
+      {
+        nickname,
+        email,
+        password,
+      },
+    ])
+    .select("*"); // 返回所有欄位的資料
 
-  generateSendJWT(newUser.dataValues, 201, res);
-}; //newUser會夾帶monogodb的_id物件
+  if ((error.code = 23505)) {
+    console.error("Error creating user:", error);
+    return next(appError(422, "已經註冊過囉", next));
+  }
+  generateSendJWT(data, 201, res);
+};
 
 const sign_in = async (req, res, next) => {
   const { email, password } = req.body;
@@ -45,23 +51,24 @@ const sign_in = async (req, res, next) => {
   if (!email || !password) {
     return next(appError(402, "帳號密碼不可為空", next));
   }
+  // 查詢用戶
+  const { data: user, error } = await supabase
+    .from("users")
+    .select("id, nickname, email, password")
+    .eq("email", email)
+    .single(); // 只取一筆資料
 
-  // const user = await User.findOne({ email }).select("+password");
-  const user = await User.findOne({
-    where: { email },
-    attributes: { include: ["password"] },
-  });
-
-  if (!user) {
-    return next(appError(404, "用戶不存在", next));
+  if (error || !user) {
+    return next(appError(404, "用戶不存在"));
   }
-
-  const auth = await bcrypt.compare(password, user.dataValues.password);
-
+  console.log("登入data", user);
+  // 驗證密碼
+  const auth = await bcrypt.compare(password, user.password);
   if (!auth) {
-    return next(appError(401, "帳號或密碼輸入錯誤", next));
+    return next(appError(401, "帳號或密碼輸入錯誤"));
   }
-
+  user.password = "";
+  // 生成 JWT 並回傳
   generateSendJWT(user, 200, res);
 };
 

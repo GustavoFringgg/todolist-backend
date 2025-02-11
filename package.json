@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "kill-port 3000 && node ./bin/www",
+    "start": "kill-port 3000 && nodemon ./bin/www",
     "swagger": "node ./swagger.js"
   },
   "dependencies": {

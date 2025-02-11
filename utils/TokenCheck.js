@@ -1,20 +1,22 @@
 const appError = require("./appError");
 const handleErrorAsync = require("./handleErrorAsync");
 const jwt = require("jsonwebtoken");
-const User = require("../model/new_usermodel");
+const supabase = require("../connections/supabaseClient");
 const isAuth = handleErrorAsync(async (req, res, next) => {
-  // 確認 token 是否存在
   if (req.headers.authorization) {
     token = req.headers.authorization.split(" ")[1];
-  }
-  if (!token) {
+  } else {
     return next(appError(401, "你尚未登入！", next));
   }
+
+  // if (!token) {
+  //   return next(appError(401, "你尚未登入！", next));
+  // }
   // 驗證 token 正確性
   const decoded = await new Promise((resolve, reject) => {
     jwt.verify(token, process.env.JWT_SECRET, (err, payload) => {
       if (err) {
-        return next(appError(400, "token效期過期請重新登入"), next);
+        return next(appError(400, "token效期過期或token錯誤請重新登入"), next);
       } else {
         resolve(payload);
       }
@@ -25,20 +27,24 @@ const isAuth = handleErrorAsync(async (req, res, next) => {
     return next(appError(401, "Token 無效"));
   }
 
-  // const currentUser = await User.findById(decoded.id).select(
-  //   "+email +createdAt"
-  // );
-  const currentUser = await User.findOne({
-    where: { id: decoded.id },
-    attributes: { include: ["password"] },
-  });
-
-  //currentUser =>整包會員資料
-  if (!currentUser) {
+  // 使用 Supabase 查詢用戶
+  const { data: user, error } = await supabase
+    .from("users")
+    .select("id, email, nickname") // 取得需要的欄位
+    .eq("id", decoded.id)
+    .single(); // 只取一筆
+  console.log("user", user);
+  if (error || !user) {
     return next(appError(401, "用戶不存在"));
   }
 
-  req.user = currentUser;
+  if (!user) {
+    return next(appError(401, "用戶不存在"));
+  }
+
+  req.user = user;
+  console.log("req", req.user);
+
   next();
 });
 
